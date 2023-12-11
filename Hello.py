@@ -11,41 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import streamlit as st
-from streamlit.logger import get_logger
+import paho.mqtt.publish as publish
 
-LOGGER = get_logger(__name__)
+# Set the MQTT broker information
+mqtt_broker = "192.168.4.1"  # IP address of the ESP8266 in AP mode
+mqtt_port = 1883
+mqtt_topic = "led_control"
 
+# Streamlit App
+st.title("ESP8266 LED Control")
 
-def run():
-    st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
-    )
+# Function to send MQTT message to ESP8266
+def send_mqtt_message(message):
+    publish.single(mqtt_topic, message, hostname=mqtt_broker, port=mqtt_port)
 
-    st.write("# Welcome to Streamlit! 👋")
+# UI for LED control
+led_status = st.checkbox("Turn On/Off LED")
 
-    st.sidebar.success("Select a demo above.")
+if led_status:
+    send_mqtt_message("ON")
+else:
+    send_mqtt_message("OFF")
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
-
-
-if __name__ == "__main__":
-    run()
